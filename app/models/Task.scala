@@ -38,4 +38,9 @@ object Task {
     }
   }
 
+  def getById(id: Long): Task = DB.withConnection { implicit c =>
+    val row = SQL("select id, label, category from task where id = {id}").on("id" -> id).apply().head
+    Task(row[Long]("id"), row[String]("label"), row[String]("category"))
+  }
+
 }

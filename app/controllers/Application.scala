@@ -41,4 +41,10 @@ object Application extends Controller {
     Redirect(routes.Application.tasks)
   }
 
+  def viewTask(id: Long) = Action {
+    val task = Task.getById(id)
+    if (task != null) Ok(views.html.task(task))
+    else BadRequest(views.html.index(Task.all(), taskForm))
+  }
+
 }
