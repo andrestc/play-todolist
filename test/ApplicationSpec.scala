@@ -72,6 +72,16 @@ class ApplicationSpec extends Specification {
       models.Task.all().size must equalTo(sizeBefore - 1)
     }
 
+    "send 200 on task detail page" in new WithApplication{
+      models.Task.create("task label", "task category")
+      val tasks = models.Task.all()
+      val task = tasks(0)
+
+      val result = route(FakeRequest(GET, "/tasks/"+task.id)).get
+
+      status(result) must equalTo(OK)
+    }
+
   }
 
 }
