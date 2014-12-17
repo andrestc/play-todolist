@@ -6,7 +6,7 @@ import play.api.db.DB
 import com.sun.xml.internal.bind.v2.TODO
 import play.api.Play.current
 
-case class Task(id: Long, label: String) 
+case class Task(id: Long, label: String)
 
 object Task {
   val task = {
@@ -15,13 +15,25 @@ object Task {
       case id~label => Task(id, label)
     }
   }
-  
+
   def all(): List[Task] = DB.withConnection { implicit c =>
   	SQL("select * from task").as(task *)
   }
-  
-  def create(label: String) {}
-  
-  def delete(id: Long) {}
+
+  def create(label: String) {
+    DB.withConnection { implicit c =>
+      SQL("insert into task (label) values ({label})").on(
+        "label" -> label
+      ).executeUpdate()
+    }
+  }
+
+  def delete(id: Long) {
+    DB.withConnection { implicit c =>
+      SQL("delete from task where id = {id}").on(
+        "id" -> id
+      ).executeUpdate()
+    }
+  }
 
 }
