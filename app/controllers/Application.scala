@@ -1,7 +1,7 @@
 package controllers
 
-import play.api.data.Form
-import play.api.data.Forms.nonEmptyText
+import play.api.data._
+import play.api.data.Forms._
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import models.Task
@@ -9,7 +9,10 @@ import models.Task
 object Application extends Controller {
 
   val taskForm = Form(
-		  "label" -> nonEmptyText
+		  tuple(
+        "label" -> nonEmptyText,
+        "category" -> nonEmptyText
+      )
   )
 
 
@@ -24,8 +27,9 @@ object Application extends Controller {
   def newTask = Action { implicit request =>
     taskForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index(Task.all(),errors)),
-        label => {
-          Task.create(label)
+        data => {
+          val (label, category) = data
+          Task.create(label, category)
           Redirect(routes.Application.tasks)
         }
     )
