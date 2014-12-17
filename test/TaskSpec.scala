@@ -26,17 +26,18 @@ class TaskSpec extends Specification {
 
     "delete tasks" in new WithApplication{
       models.Task.create("Task label", "Task category")
-      val tasks = models.Task.all()
+      val sizeBefore = models.Task.all().size
       models.Task.delete(1)
-      models.Task.all().size must equalTo(tasks.size - 1)
+      models.Task.all().size must equalTo(sizeBefore - 1)
     }
 
     "list all tasks" in new WithApplication{
+      val sizeBefore = models.Task.all().size
       models.Task.create("Task label", "Task category")
       models.Task.create("Task label 2", "Task category")
       models.Task.create("Task label 3", "Task category")
 
-      models.Task.all().size must equalTo(3)
+      models.Task.all().size must equalTo(sizeBefore + 3)
     }
 
   }

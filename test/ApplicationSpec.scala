@@ -34,6 +34,44 @@ class ApplicationSpec extends Specification {
       status(tasks) must equalTo(OK)
     }
 
+    "redirect to tasks after creating tasks" in new WithApplication{
+      val task = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody(
+          "label" -> "task label",
+          "category" -> "task catebory"
+        )).get
+
+      status(task) must equalTo(SEE_OTHER)
+      redirectLocation(task) must beSome("/tasks")
+    }
+
+    "redirect to tasks after deleting tasks" in new WithApplication{
+      models.Task.create("task label", "task category")
+      val task = route(FakeRequest(POST, "/tasks/1/delete")).get
+
+      status(task) must equalTo(SEE_OTHER)
+      redirectLocation(task) must beSome("/tasks")
+    }
+
+    "add tasks" in new WithApplication{
+      val sizeBefore = models.Task.all().size
+      val fakeRequest = FakeRequest(POST, "/tasks")
+      val withTask = fakeRequest
+        .withFormUrlEncodedBody(("label", "task label"))
+
+      val result = route(withTask)
+      //TODO not working.
+      models.Task.all().size must equalTo(sizeBefore + 1)
+    }
+
+    "delete tasks" in new WithApplication{
+      models.Task.create("task label", "task category")
+      val sizeBefore = models.Task.all().size
+      val result = route(FakeRequest(POST, "/tasks/1/delete"))
+
+      //TODO not working.
+      models.Task.all().size must equalTo(sizeBefore - 1)
+    }
+
   }
 
 }
